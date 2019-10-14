@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- jquery -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
+    "></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>近代物理实验成绩</title>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <h1 style="text-align: center;">近代物理实验成绩</h1>
+        <div class="form-group">
+            <label for="secret">口令:</label>
+            <input type="text" v-model="secret">
+        </div>
+        <table class="table" v-if="secret=='2019下'">
+            <thead>
+                <tr>
+                    <td>日期</td>
+                    <td>实验</td>
+                    <td>姓名</td>
+                    <td>学号</td>
+                    <td>预习</td>
+                    <td>实验</td>
+                    <td>报告</td>
+                    <td>总分</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(grade,index) in filteredGrades">
+                    <td>{{grade.date}}</td>
+                    <td>{{grade.exp}}</td>
+                    <td>{{grade.name}}</td>
+                    <td>{{grade.id}}</td>
+                    <td>{{grade.pre}}</td>
+                    <td>{{grade.middle}}</td>
+                    <td>{{grade.post}}</td>
+                    <td>{{calcTotal(grade)}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const vm = new Vue({
+            el: "#app",
+            data: {
+                grades: [],
+                secret:""
+            },
+            created: function () {
+                $.get('grades.json', function (data, status) {
+                    this.grades = data;
+                }.bind(this))
+            },
+            computed:{
+                filteredGrades:function(){
+                    let filteredGrades=this.grades.slice(0);
+                    filteredGrades.sort((a,b)=>{
+                        return Date.parse(a.date)-Date.parse(b.date);
+                    });
+                    return filteredGrades;
+                }
+            },
+            methods: {
+                calcTotal(grade){
+                    return grade.pre+grade.middle+grade.post;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
